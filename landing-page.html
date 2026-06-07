@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Laman Utama</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0e0e;
+      --surface: #161616;
+      --accent: #c8f04c;
+      --text: #f0ede6;
+      --muted: #7a7870;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 4rem;
+      background: rgba(14,14,14,0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      animation: slideDown .6s ease both;
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      letter-spacing: .04em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links { display: flex; gap: 2.4rem; list-style: none; }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 400;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      transition: color .25s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -3px; left: 0; right: 0; height: 1px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .3s ease;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    .nav-cta {
+      background: var(--accent);
+      color: #0e0e0e;
+      padding: .55rem 1.4rem;
+      border-radius: 2px;
+      font-size: .85rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: opacity .25s, transform .2s;
+    }
+
+    .nav-cta:hover { opacity: .85; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 10rem 4rem 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 55% at 70% 40%, rgba(200,240,76,.08) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(200,240,76,.04) 0%, transparent 60%);
+    }
+
+    .hero-tag {
+      display: inline-block;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: .75rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      padding: .35rem .9rem;
+      border-radius: 1px;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp .7s .2s ease forwards;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 8vw, 7rem);
+      line-height: 1.05;
+      max-width: 760px;
+      opacity: 0;
+      animation: fadeUp .8s .35s ease forwards;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      margin-top: 1.8rem;
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.7;
+      max-width: 500px;
+      opacity: 0;
+      animation: fadeUp .8s .5s ease forwards;
+    }
+
+    .hero-actions {
+      display: flex; gap: 1rem; margin-top: 2.8rem;
+      opacity: 0;
+      animation: fadeUp .8s .65s ease forwards;
+    }
+
+    .btn-primary {
+      background: var(--accent); color: #0e0e0e;
+      padding: .85rem 2rem;
+      border: none; border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem; font-weight: 500;
+      letter-spacing: .07em; text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity .25s, transform .2s;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover { opacity: .82; transform: translateY(-2px); }
+
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      padding: .85rem 2rem;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem; font-weight: 400;
+      letter-spacing: .07em; text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color .25s, color .25s;
+      text-decoration: none;
+    }
+
+    .btn-ghost:hover { border-color: var(--text); }
+
+    .hero-line {
+      position: absolute; right: 4rem; top: 50%;
+      transform: translateY(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      color: var(--muted); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase;
+      writing-mode: vertical-rl;
+      opacity: 0;
+      animation: fadeIn 1s 1s ease forwards;
+    }
+
+    .hero-line::before {
+      content: '';
+      width: 1px; height: 60px;
+      background: linear-gradient(transparent, var(--muted));
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 6rem 4rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: .75rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 3rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5px;
+      background: var(--border);
+    }
+
+    .feature-card {
+      background: var(--surface);
+      padding: 2.4rem;
+      transition: background .25s;
+    }
+
+    .feature-card:hover { background: #1d1d1d; }
+
+    .feature-icon {
+      font-size: 1.6rem; margin-bottom: 1.2rem;
+    }
+
+    .feature-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      margin-bottom: .7rem;
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.75;
+    }
+
+    /* ── CTA SECTION ── */
+    .cta-section {
+      padding: 6rem 4rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .cta-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 4rem);
+      margin-bottom: 1.2rem;
+    }
+
+    .cta-section p {
+      color: var(--muted); margin-bottom: 2.5rem; font-size: 1rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2rem 4rem;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      color: var(--muted); font-size: .8rem;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    @keyframes fadeUp {
+      from { transform: translateY(24px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 8rem 1.5rem 4rem; }
+      .hero-line { display: none; }
+      .features { padding: 4rem 1.5rem; }
+      .cta-section { padding: 4rem 1.5rem; }
+      footer { padding: 2rem 1.5rem; flex-direction: column; gap: .8rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGASI -->
+  <nav>
+    <a href="#" class="nav-logo">Nova<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="#fitur">Fitur</a></li>
+      <li><a href="#tentang">Tentang</a></li>
+      <li><a href="#kontak">Kontak</a></li>
+    </ul>
+    <a href="#mulai" class="nav-cta">Mulai Gratis</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="beranda">
+    <div class="hero-bg"></div>
+    <span class="hero-tag">✦ Selamat Datang</span>
+    <h1>Ide Besar<br/>Dimulai dari<br/><em>Satu Langkah</em></h1>
+    <p class="hero-sub">
+      Platform sederhana untuk membantu Anda mewujudkan gagasan menjadi kenyataan — cepat, bersih, dan tanpa ribet.
+    </p>
+    <div class="hero-actions">
+      <a href="#mulai" class="btn-primary">Coba Sekarang</a>
+      <a href="#fitur" class="btn-ghost">Pelajari Lebih</a>
+    </div>
+    <div class="hero-line">Scroll ke bawah</div>
+  </section>
+
+  <!-- FITUR -->
+  <section class="features" id="fitur">
+    <p class="section-label">✦ Apa yang kami tawarkan</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Cepat & Ringan</h3>
+        <p>Dioptimalkan untuk performa tinggi. Halaman dimuat dalam hitungan milidetik, tanpa hambatan.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3>Desain Fleksibel</h3>
+        <p>Sesuaikan tampilan sesuai kebutuhan Anda. Ribuan opsi tersedia dengan antarmuka yang intuitif.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Aman & Terpercaya</h3>
+        <p>Keamanan data adalah prioritas utama kami. Enkripsi end-to-end di setiap lapisan sistem.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="mulai">
+    <h2>Siap Untuk <em style="font-style:italic;color:var(--accent)">Memulai?</em></h2>
+    <p>Bergabunglah dengan ribuan pengguna yang sudah mempercayai Nova.</p>
+    <a href="#" class="btn-primary">Daftar Gratis</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="kontak">
+    <span>© 2026 Nova. Semua hak dilindungi.</span>
+    <span>Dibuat dengan ♥ di Indonesia</span>
+  </footer>
+
+</body>
+</html>
