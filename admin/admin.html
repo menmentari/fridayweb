@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #f5f3ef;
+      --surface:  #ffffff;
+      --sidebar:  #1a1a1a;
+      --text:     #1a1a1a;
+      --muted:    #8a8780;
+      --border:   #e6e3de;
+      --accent:   #e8552a;
+      --accent2:  #3d6b4f;
+      --accent3:  #d4a843;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Instrument Sans', sans-serif;
+      font-weight: 300;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: var(--sidebar);
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 0;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 50;
+      animation: slideRight .5s ease both;
+    }
+
+    .sidebar-logo {
+      padding: 0 1.6rem 2rem;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      margin-bottom: 1.6rem;
+    }
+
+    .sidebar-logo .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -.01em;
+    }
+
+    .sidebar-logo .logo-text span { color: var(--accent); }
+
+    .sidebar-logo .logo-sub {
+      font-size: .7rem;
+      color: rgba(255,255,255,.3);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-top: .15rem;
+    }
+
+    .nav-group-label {
+      padding: 0 1.6rem .5rem;
+      font-size: .65rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.2);
+      margin-top: .5rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+      padding: .75rem 1.6rem;
+      color: rgba(255,255,255,.45);
+      font-size: .88rem;
+      font-weight: 400;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+      border-left: 2px solid transparent;
+      user-select: none;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.85);
+    }
+
+    .nav-item.active {
+      color: #fff;
+      background: rgba(255,255,255,.07);
+      border-left-color: var(--accent);
+    }
+
+    .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--accent);
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 600;
+      padding: .15rem .45rem;
+      border-radius: 10px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 1.5rem 1.6rem;
+      border-top: 1px solid rgba(255,255,255,.07);
+    }
+
+    .user-info {
+      display: flex; align-items: center; gap: .85rem;
+    }
+
+    .user-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: .8rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .user-name {
+      font-size: .85rem;
+      color: rgba(255,255,255,.75);
+      font-weight: 400;
+    }
+
+    .user-role {
+      font-size: .7rem;
+      color: rgba(255,255,255,.3);
+    }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: 240px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 2.5rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 40;
+    }
+
+    .topbar-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 1.2rem; }
+
+    .search-bar {
+      display: flex; align-items: center; gap: .6rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .5rem 1rem;
+      font-size: .85rem;
+      color: var(--muted);
+    }
+
+    .notif-btn {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      position: relative;
+      transition: background .2s;
+    }
+
+    .notif-btn:hover { background: var(--bg); }
+
+    .notif-dot {
+      width: 7px; height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: absolute; top: 5px; right: 5px;
+      border: 1.5px solid var(--surface);
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      padding: 2rem 2.5rem;
+      flex: 1;
+    }
+
+    /* ── STATS GRID ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      padding: 1.6rem;
+      animation: fadeUp .5s ease both;
+    }
+
+    .stat-card:nth-child(1) { animation-delay: .1s; }
+    .stat-card:nth-child(2) { animation-delay: .2s; }
+    .stat-card:nth-child(3) { animation-delay: .3s; }
+    .stat-card:nth-child(4) { animation-delay: .4s; }
+
+    .stat-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .stat-label {
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+    }
+
+    .stat-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .95rem;
+    }
+
+    .stat-icon.orange { background: rgba(232,85,42,.12); }
+    .stat-icon.green  { background: rgba(61,107,79,.12); }
+    .stat-icon.amber  { background: rgba(212,168,67,.12); }
+    .stat-icon.blue   { background: rgba(59,130,246,.12); }
+
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: .4rem;
+    }
+
+    .stat-change {
+      font-size: .78rem;
+      display: flex; align-items: center; gap: .3rem;
+    }
+
+    .stat-change.up   { color: var(--accent2); }
+    .stat-change.down { color: var(--accent); }
+
+    /* ── BOTTOM GRID ── */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      animation: fadeUp .6s .5s ease both;
+    }
+
+    .card-header {
+      padding: 1.3rem 1.6rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: .95rem;
+      font-weight: 600;
+    }
+
+    .card-action {
+      font-size: .78rem;
+      color: var(--accent);
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+
+    .card-action:hover { opacity: .7; }
+
+    /* ── TABLE ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      padding: .8rem 1.6rem;
+      text-align: left;
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      font-weight: 500;
+      background: var(--bg);
+    }
+
+    tbody tr {
+      border-top: 1px solid var(--border);
+      transition: background .15s;
+    }
+
+    tbody tr:hover { background: #faf9f6; }
+
+    tbody td {
+      padding: .95rem 1.6rem;
+      font-size: .875rem;
+    }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .25rem .7rem;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 500;
+    }
+
+    .status-badge.success { background: rgba(61,107,79,.1); color: var(--accent2); }
+    .status-badge.pending { background: rgba(212,168,67,.12); color: #9a7520; }
+    .status-badge.failed  { background: rgba(232,85,42,.1);  color: var(--accent); }
+
+    .status-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ── ACTIVITY LIST ── */
+    .activity-list { padding: .5rem 0; }
+
+    .activity-item {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding: 1rem 1.6rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .activity-item:first-child { border-top: none; }
+
+    .activity-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+      margin-top: .35rem;
+    }
+
+    .activity-dot.orange { background: var(--accent); }
+    .activity-dot.green  { background: var(--accent2); }
+    .activity-dot.amber  { background: var(--accent3); }
+
+    .activity-text {
+      font-size: .85rem;
+      line-height: 1.5;
+    }
+
+    .activity-time {
+      margin-top: .2rem;
+      font-size: .73rem;
+      color: var(--muted);
+    }
+
+    /* ── MINI BAR CHART ── */
+    .chart-area {
+      padding: 1.4rem 1.6rem;
+      display: flex;
+      align-items: flex-end;
+      gap: .4rem;
+      height: 100px;
+    }
+
+    .bar {
+      flex: 1;
+      border-radius: 3px 3px 0 0;
+      background: var(--border);
+      transition: background .2s;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .bar:hover { background: var(--accent); }
+    .bar.highlight { background: var(--accent); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes slideRight {
+      from { transform: translateX(-100%); }
+      to   { transform: translateX(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-text">Admin<span>.</span></div>
+      <div class="logo-sub">Panel Kontrol</div>
+    </div>
+
+    <div class="nav-group-label">Utama</div>
+    <div class="nav-item active"><span class="nav-icon">◈</span> Dasbor</div>
+    <div class="nav-item"><span class="nav-icon">◻</span> Analitik</div>
+    <div class="nav-item"><span class="nav-icon">◑</span> Pesanan <span class="nav-badge">12</span></div>
+
+    <div class="nav-group-label">Pengelolaan</div>
+    <div class="nav-item"><span class="nav-icon">◇</span> Produk</div>
+    <div class="nav-item"><span class="nav-icon">◎</span> Pengguna</div>
+    <div class="nav-item"><span class="nav-icon">▷</span> Laporan</div>
+
+    <div class="nav-group-label">Sistem</div>
+    <div class="nav-item"><span class="nav-icon">⊞</span> Pengaturan</div>
+    <div class="nav-item"><span class="nav-icon">↗</span> Bantuan</div>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">AD</div>
+        <div>
+          <div class="user-name">Admin Utama</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-title">Dasbor Utama</div>
+      <div class="topbar-right">
+        <div class="search-bar">🔍 Cari sesuatu...</div>
+        <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+        <div class="user-avatar" style="width:36px;height:36px;border-radius:8px;font-size:.75rem;">AD</div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Total Pendapatan</span>
+            <div class="stat-icon orange">💰</div>
+          </div>
+          <div class="stat-value">Rp 84,2jt</div>
+          <div class="stat-change up">↑ 12,4% dari bulan lalu</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Pesanan Baru</span>
+            <div class="stat-icon green">📦</div>
+          </div>
+          <div class="stat-value">1.284</div>
+          <div class="stat-change up">↑ 8,1% dari bulan lalu</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Pengguna Aktif</span>
+            <div class="stat-icon amber">👥</div>
+          </div>
+          <div class="stat-value">3.670</div>
+          <div class="stat-change down">↓ 2,3% dari bulan lalu</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Tingkat Konversi</span>
+            <div class="stat-icon blue">📈</div>
+          </div>
+          <div class="stat-value">4,6%</div>
+          <div class="stat-change up">↑ 0,8% dari bulan lalu</div>
+        </div>
+      </div>
+
+      <!-- BOTTOM GRID -->
+      <div class="bottom-grid">
+
+        <!-- TABLE -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Pesanan Terbaru</span>
+            <span class="card-action">Lihat Semua →</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID Pesanan</th>
+                <th>Pelanggan</th>
+                <th>Produk</th>
+                <th>Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>#ORD-5821</td>
+                <td>Budi Santoso</td>
+                <td>Produk A</td>
+                <td>Rp 320.000</td>
+                <td><span class="status-badge success"><span class="status-dot"></span>Selesai</span></td>
+              </tr>
+              <tr>
+                <td>#ORD-5820</td>
+                <td>Siti Rahayu</td>
+                <td>Produk C</td>
+                <td>Rp 150.000</td>
+                <td><span class="status-badge pending"><span class="status-dot"></span>Diproses</span></td>
+              </tr>
+              <tr>
+                <td>#ORD-5819</td>
+                <td>Andi Wijaya</td>
+                <td>Produk B</td>
+                <td>Rp 480.000</td>
+                <td><span class="status-badge success"><span class="status-dot"></span>Selesai</span></td>
+              </tr>
+              <tr>
+                <td>#ORD-5818</td>
+                <td>Dewi Lestari</td>
+                <td>Produk D</td>
+                <td>Rp 95.000</td>
+                <td><span class="status-badge failed"><span class="status-dot"></span>Gagal</span></td>
+              </tr>
+              <tr>
+                <td>#ORD-5817</td>
+                <td>Roni Pratama</td>
+                <td>Produk A</td>
+                <td>Rp 240.000</td>
+                <td><span class="status-badge pending"><span class="status-dot"></span>Diproses</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ACTIVITY -->
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+          <!-- MINI CHART -->
+          <div class="card" style="animation-delay:.55s">
+            <div class="card-header">
+              <span class="card-title">Penjualan Minggu Ini</span>
+            </div>
+            <div class="chart-area" id="chartArea"></div>
+          </div>
+
+          <!-- ACTIVITY -->
+          <div class="card" style="animation-delay:.6s">
+            <div class="card-header">
+              <span class="card-title">Aktivitas Terbaru</span>
+            </div>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-dot green"></div>
+                <div>
+                  <div class="activity-text">Pengguna baru <strong>Sari Dewi</strong> mendaftar</div>
+                  <div class="activity-time">2 menit lalu</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot orange"></div>
+                <div>
+                  <div class="activity-text">Pesanan #ORD-5821 telah selesai</div>
+                  <div class="activity-time">15 menit lalu</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot amber"></div>
+                <div>
+                  <div class="activity-text">Stok <strong>Produk B</strong> hampir habis</div>
+                  <div class="activity-time">1 jam lalu</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot"></div>
+                <div>
+                  <div class="activity-text">Laporan bulanan berhasil diekspor</div>
+                  <div class="activity-time">3 jam lalu</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // Generate mini bar chart
+    const data = [40, 65, 50, 80, 55, 90, 75];
+    const days = ['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
+    const area = document.getElementById('chartArea');
+    const max = Math.max(...data);
+
+    data.forEach((v, i) => {
+      const bar = document.createElement('div');
+      bar.className = 'bar' + (i === 5 ? ' highlight' : '');
+      bar.style.height = (v / max * 100) + '%';
+      bar.title = days[i] + ': ' + v + ' pesanan';
+      area.appendChild(bar);
+    });
+
+    // Nav item click
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
